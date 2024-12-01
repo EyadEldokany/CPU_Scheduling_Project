@@ -7,12 +7,14 @@ public class Process {
     private IntegerProperty cpuTime;
     private IntegerProperty waitingTime;
     private IntegerProperty turnaroundTime;
+    /* private IntegerProperty  priority;*/ 
 
     public Process(String processId, int cpuTime) {
         this.processId = new SimpleStringProperty(processId);
         this.cpuTime = new SimpleIntegerProperty(cpuTime);
         this.waitingTime = new SimpleIntegerProperty(0);
         this.turnaroundTime = new SimpleIntegerProperty(0);
+      /*  this.priority = new SimpleStringProperty(priority); */
     }
 
     public StringProperty processIdProperty() {
@@ -38,4 +40,7 @@ public class Process {
     public void setTurnaroundTime(int turnaroundTime) {
         this.turnaroundTime.set(turnaroundTime);
     }
+    /*public IntegerProperty PriorityProperty() {
+        return priority;
+    } */
 }
