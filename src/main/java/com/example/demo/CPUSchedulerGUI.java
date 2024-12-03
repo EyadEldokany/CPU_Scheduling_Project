@@ -152,6 +152,38 @@ public class CPUSchedulerGUI extends Application {
             process.setTurnaroundTime(currentTime);
         }
     }
+    /*
+    private void roundRobinScheduling(ObservableList<Process> processes, int quantum) {
+    int s = processes.size();
+    int[] remainingBurstTime = new int[s];
+    for (int i = 0; i < s; i++) {
+        remainingBurstTime[i] = processes.get(i).getBurstTime();
+    }
+
+    int currentTime = 0;
+    boolean done;
+    
+    do {
+        done = true;
+        for (int i = 0; i < s; i++) {
+            if (remainingBurstTime[i] > 0) {
+                done = false; //  a pending process
+                if (remainingBurstTime[i] > quantum) {
+                    currentTime += quantum;
+                    remainingBurstTime[i] -= quantum;
+                } else {
+                    currentTime += remainingBurstTime[i];
+                    processes.get(i).setWaitingTime(currentTime - processes.get(i).getBurstTime());
+                    processes.get(i).setTurnaroundTime(currentTime);
+                    remainingBurstTime[i] = 0; // Process completed
+                }
+            }
+        }
+    } while (!done); //  until all processes are completed
+}
+
+    
+    */
 
     public static void main(String[] args) {
         launch(args);
