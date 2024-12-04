@@ -6,7 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-
+import java.util.*;
 import java.util.Comparator;
 
 public class CPUSchedulerGUI extends Application {
@@ -184,7 +184,78 @@ public class CPUSchedulerGUI extends Application {
 
     
     */
+/*
 
+public class FCFSApp {
+
+    // Class to represent a process
+    static class Process {
+        int id;               
+        int burstTime;       
+        int turnaroundTime;   
+        int waitingTime;      
+
+        // Constructor
+        public Process(int id, int burstTime) {
+            this.id = id;
+            this.burstTime = burstTime;
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in); // To read input from the user
+        List<Process> processes = new ArrayList<>();
+
+        // Step 1: Input the number of processes
+        System.out.print("Enter the number of processes: ");
+        int n = scanner.nextInt();
+
+        // Step 2: Input burst time for each process
+        for (int i = 0; i < n; i++) {
+            System.out.println("Enter details for Process " + (i + 1) + ":");
+            System.out.print("Burst Time: ");
+            int burstTime = scanner.nextInt();
+            processes.add(new Process(i + 1, burstTime)); // Add process to the list
+        }
+
+        // Step 3: Simulate FCFS scheduling
+        int currentTime = 0;        // Tracks the cumulative time
+        int totalWaitingTime = 0;   // Sum of waiting times for all processes
+        int totalTurnaroundTime = 0; // Sum of turn around times for all processes
+
+        for (Process process : processes) {
+            // Calculate turn around time 
+            currentTime += process.burstTime;
+            process.turnaroundTime = currentTime;
+
+            // Calculate waiting time
+            process.waitingTime = process.turnaroundTime - process.burstTime;
+
+            // Update totals for averages
+            totalWaitingTime += process.waitingTime;
+            totalTurnaroundTime += process.turnaroundTime;
+        }
+
+        // Step 4: Output results
+        System.out.println("\nProcess\tBurst\tWaiting\tTurnaround");
+        for (Process process : processes) {
+            System.out.printf("%d\t%d\t%d\t%d\n",
+                    process.id, process.burstTime,
+                    process.waitingTime, process.turnaroundTime);
+        }
+
+        // Calculate and print averages
+        double avgWaitingTime = (double) totalWaitingTime / n;
+        double avgTurnaroundTime = (double) totalTurnaroundTime / n;
+
+        System.out.printf("\nAverage Waiting Time: %.2f\n", avgWaitingTime);
+        System.out.printf("Average Turnaround Time: %.2f\n", avgTurnaroundTime);
+
+        scanner.close(); // Close the scanner
+    }
+}
+
+*/
     public static void main(String[] args) {
         launch(args);
     }
