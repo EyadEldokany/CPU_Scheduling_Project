@@ -123,7 +123,10 @@ public class CPUSchedulerGUI extends Application {
             sjfScheduling(table.getItems());
             table.refresh();
         });
-
+        /*fcfsButton.setOnAction(e -> {
+            fcfsScheduling(table.getItems());
+            table.refresh();
+        });*/
         resetButton.setOnAction(e -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to reset the table?", ButtonType.YES, ButtonType.NO);
             alert.showAndWait();
