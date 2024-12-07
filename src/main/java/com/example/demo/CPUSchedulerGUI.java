@@ -6,10 +6,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import java.util.Comparator;
+
+import java.util.*;
 
 public class CPUSchedulerGUI extends Application {
     private int processCounter = 1; // Counter for generating unique Process IDs
+    private Queue<Process> readyQueue = new LinkedList<>(); // Ready Queue for processes
     public CPUSchedulerGUI() {
         // Default constructor
     }
@@ -52,7 +54,6 @@ public class CPUSchedulerGUI extends Application {
                 int cpuTime = Integer.parseInt(cpuTimeField.getText().trim());
                 int priority;
 
-                // Validate Inputs
                 if (cpuTime <= 0) {
                     showAlert("Validation Error", "CPU Time must be greater than 0!");
                     return;
@@ -65,9 +66,10 @@ public class CPUSchedulerGUI extends Application {
                     priority = Integer.parseInt(priorityField.getText().trim());
                 }
 
-                // Add Process to Table
+                // Create Process and Add to Ready Queue and Table
                 Process process = new Process(processId, cpuTime, priority);
-                table.getItems().add(process);
+                readyQueue.add(process); // Add to Ready Queue
+                table.getItems().add(process); // Add to TableView
 
                 // Clear Input Fields
                 cpuTimeField.clear();
@@ -77,6 +79,7 @@ public class CPUSchedulerGUI extends Application {
                 showAlert("Input Error", "CPU Time and Priority must be valid integers!");
             }
         });
+
 
         form.getChildren().addAll(
                 new Label("Add Process"),
@@ -130,12 +133,11 @@ public class CPUSchedulerGUI extends Application {
         Button resetButton = new Button("Reset Table");
 
         sjfButton.setOnAction(e -> {
-            sjfScheduling(table.getItems());
-            table.refresh();
+            sjfScheduling(new LinkedList<>(readyQueue)); // Create a copy to sort and process
         });
         fcfsButton.setOnAction(e -> {
-            fcfsScheduling(table.getItems());
-            table.refresh();
+            fcfsScheduling(new LinkedList<>(readyQueue)); // Create a copy of the queue
+            table.refresh(); // Update the table to show the new values
         });
         resetButton.setOnAction(e -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to reset the table?", ButtonType.YES, ButtonType.NO);
@@ -144,6 +146,7 @@ public class CPUSchedulerGUI extends Application {
             if (alert.getResult() == ButtonType.YES) {
                 table.getItems().clear();
                 processCounter = 1;
+                readyQueue.clear(); // Clear the ready queue
             }
         });
 
@@ -153,19 +156,24 @@ public class CPUSchedulerGUI extends Application {
     }
 
 
-    private void sjfScheduling(ObservableList<Process> processes) {
-        // Sort processes by CPU time
-        processes.sort(Comparator.comparingInt(p -> p.cpuTimeProperty().get()));
+    private void sjfScheduling(Queue<Process> readyQueue) {
+        // Convert the Ready Queue to a List and sort it by CPU Time (ascending order)
+        List<Process> sortedProcesses = new ArrayList<>(readyQueue);
+        sortedProcesses.sort(Comparator.comparingInt(p -> p.cpuTimeProperty().get()));
 
         int currentTime = 0;
 
-        // Calculate waiting and turnaround times
-        for (Process process : processes) {
+        for (Process process : sortedProcesses) {
             process.setWaitingTime(currentTime);
             currentTime += process.cpuTimeProperty().get();
             process.setTurnaroundTime(currentTime);
         }
+        table.getItems().clear();
+        table.getItems().addAll(sortedProcesses);
+        readyQueue.clear();
     }
+
+
     /*
     private void roundRobinScheduling(ObservableList<Process> processes, int quantum) {
     int s = processes.size();
@@ -199,15 +207,17 @@ public class CPUSchedulerGUI extends Application {
 
     */
 
-    private void fcfsScheduling(ObservableList<Process> processes) {
+    private void fcfsScheduling(Queue<Process> readyQueue) {
         int currentTime = 0;
 
-        for (Process currentProcess : processes) {
+        for (Process currentProcess : readyQueue) {
+            currentProcess.setWaitingTime(currentTime);
             currentTime += currentProcess.cpuTimeProperty().get();
-            currentProcess.setWaitingTime(currentTime - currentProcess.cpuTimeProperty().get());
             currentProcess.setTurnaroundTime(currentTime);
         }
+        readyQueue.clear();
     }
+
     public static void main(String[] args) {
         launch(args);
     }
