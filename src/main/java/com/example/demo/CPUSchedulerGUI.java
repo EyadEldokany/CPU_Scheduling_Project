@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import java.util.Comparator;
 
 public class CPUSchedulerGUI extends Application {
+    private int processCounter = 1; // Counter for generating unique Process IDs
     public CPUSchedulerGUI() {
         // Default constructor
     }
@@ -35,54 +36,57 @@ public class CPUSchedulerGUI extends Application {
         form.setStyle("-fx-padding: 10; -fx-border-color: black;");
 
         // Input Fields
-        TextField processIdField = new TextField();
-        processIdField.setPromptText("Process ID");
         TextField cpuTimeField = new TextField();
         cpuTimeField.setPromptText("CPU Time");
         TextField priorityField = new TextField();
-        priorityField.setPromptText("Priority Field");
+        priorityField.setPromptText("Priority");
 
         // Add Process Button
         Button addButton = new Button("Add Process");
         addButton.setOnAction(e -> {
             try {
+                // Generate Auto-Incremented Process ID
+                String processId = "P" + processCounter++;
+
                 // Get Input Values
-                String processId = processIdField.getText().trim();
                 int cpuTime = Integer.parseInt(cpuTimeField.getText().trim());
-                int priority = Integer.parseInt(priorityField.getText().trim());
+                int priority;
+
                 // Validate Inputs
-                if (processId.isEmpty()) {
-                    showAlert("Validation Error", "Process ID cannot be empty!");
-                    return;
-                }
                 if (cpuTime <= 0) {
                     showAlert("Validation Error", "CPU Time must be greater than 0!");
                     return;
                 }
 
+                if (priorityField.getText().trim().isEmpty()) {
+                    showAlert("Validation Error", "Priority cannot be empty!");
+                    return;
+                } else {
+                    priority = Integer.parseInt(priorityField.getText().trim());
+                }
+
                 // Add Process to Table
-                Process process = new Process(processId, cpuTime , priority);
+                Process process = new Process(processId, cpuTime, priority);
                 table.getItems().add(process);
 
                 // Clear Input Fields
-                processIdField.clear();
                 cpuTimeField.clear();
                 priorityField.clear();
 
             } catch (NumberFormatException ex) {
-                showAlert("Input Error", "CPU Time must be a valid integer!");
+                showAlert("Input Error", "CPU Time and Priority must be valid integers!");
             }
         });
 
         form.getChildren().addAll(
                 new Label("Add Process"),
-                processIdField,
                 cpuTimeField,
                 priorityField,
                 addButton
         );
         return form;
     }
+
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
@@ -139,6 +143,7 @@ public class CPUSchedulerGUI extends Application {
 
             if (alert.getResult() == ButtonType.YES) {
                 table.getItems().clear();
+                processCounter = 1;
             }
         });
 
