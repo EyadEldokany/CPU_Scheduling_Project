@@ -137,6 +137,15 @@ public class CPUSchedulerGUI extends Application {
             fcfsScheduling(table.getItems());
             table.refresh();
         });
+         rrButton.setOnAction(e -> {
+            fcfsScheduling(table.getItems());
+            table.refresh();
+        });
+         priorityButton.setOnAction(e -> {
+            fcfsScheduling(table.getItems());
+            table.refresh();
+        });
+        
         resetButton.setOnAction(e -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to reset the table?", ButtonType.YES, ButtonType.NO);
             alert.showAndWait();
@@ -166,7 +175,7 @@ public class CPUSchedulerGUI extends Application {
             process.setTurnaroundTime(currentTime);
         }
     }
-    /*
+    
     private void roundRobinScheduling(ObservableList<Process> processes, int quantum) {
     int s = processes.size();
     int[] remainingBurstTime = new int[s];
@@ -197,7 +206,7 @@ public class CPUSchedulerGUI extends Application {
 }
 
 
-    */
+    
 
     private void fcfsScheduling(ObservableList<Process> processes) {
         int currentTime = 0;
@@ -208,6 +217,13 @@ public class CPUSchedulerGUI extends Application {
             currentProcess.setTurnaroundTime(currentTime);
         }
     }
+
+    
+   
+
+
+
+    
     public static void main(String[] args) {
         launch(args);
     }
