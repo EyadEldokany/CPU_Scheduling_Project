@@ -40,7 +40,10 @@ public class CPUSchedulerGUI extends Application {
         cpuTimeField.setPromptText("CPU Time");
         TextField priorityField = new TextField();
         priorityField.setPromptText("Priority");
-
+         TextField priorityField = new TextField();
+        priorityField.setPromptText("Priority");
+        TextField quantumField = new TextField();
+        quantumField.setPromptText("Quantum Time");
         // Add Process Button
         Button addButton = new Button("Add Process");
         addButton.setOnAction(e -> {
@@ -50,7 +53,9 @@ public class CPUSchedulerGUI extends Application {
 
                 // Get Input Values
                 int cpuTime = Integer.parseInt(cpuTimeField.getText().trim());
+                 int quantum =Integer.parseInt(quantumField.getText().trim());
                 int priority;
+          
 
                 // Validate Inputs
                 if (cpuTime <= 0) {
@@ -72,6 +77,7 @@ public class CPUSchedulerGUI extends Application {
                 // Clear Input Fields
                 cpuTimeField.clear();
                 priorityField.clear();
+                quantumField.clear();
 
             } catch (NumberFormatException ex) {
                 showAlert("Input Error", "CPU Time and Priority must be valid integers!");
@@ -82,6 +88,7 @@ public class CPUSchedulerGUI extends Application {
                 new Label("Add Process"),
                 cpuTimeField,
                 priorityField,
+                quantumField
                 addButton
         );
         return form;
