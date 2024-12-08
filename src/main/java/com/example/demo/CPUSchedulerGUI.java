@@ -40,10 +40,8 @@ public class CPUSchedulerGUI extends Application {
         cpuTimeField.setPromptText("CPU Time");
         TextField priorityField = new TextField();
         priorityField.setPromptText("Priority");
-         TextField priorityField = new TextField();
-        priorityField.setPromptText("Priority");
-        TextField quantumField = new TextField();
-        quantumField.setPromptText("Quantum Time");
+//        TextField quantumField = new TextField();
+//        quantumField.setPromptText("Quantum Time");
         // Add Process Button
         Button addButton = new Button("Add Process");
         addButton.setOnAction(e -> {
@@ -53,7 +51,7 @@ public class CPUSchedulerGUI extends Application {
 
                 // Get Input Values
                 int cpuTime = Integer.parseInt(cpuTimeField.getText().trim());
-              
+//                int quantum =Integer.parseInt(quantumField.getText().trim());
                 int priority;
           
 
@@ -77,7 +75,7 @@ public class CPUSchedulerGUI extends Application {
                 // Clear Input Fields
                 cpuTimeField.clear();
                 priorityField.clear();
-          
+//                quantumField.clear();
 
             } catch (NumberFormatException ex) {
                 showAlert("Input Error", "CPU Time and Priority must be valid integers!");
@@ -88,27 +86,10 @@ public class CPUSchedulerGUI extends Application {
                 new Label("Add Process"),
                 cpuTimeField,
                 priorityField,
-                quantumField
+//                quantumField,
                 addButton
         );
         return form;
-    }
-
-      private void ٌRRAction() {
-        try {
-           
-            int quantumTime = Integer.parseInt(quantumField.getText().trim());
-            // Call your scheduling method with the retrieved quantum time
-            rrScheduling(table.getItems(), quantumTime);
-            table.refresh();
-           quantumField.clear();
-        } catch (NumberFormatException ex) {
-            // Handle invalid input
-            showErrorAlert("Please enter a valid integer for quantum time.");
-        } catch (Exception ex) {
-            // Handle any other exceptions
-            showErrorAlert("An error occurred: " + ex.getMessage());
-        }
     }
 
     private void showAlert(String title, String message) {
@@ -134,6 +115,7 @@ public class CPUSchedulerGUI extends Application {
 
         TableColumn<Process, Integer> waitingTimeColumn = new TableColumn<>("Waiting Time");
         waitingTimeColumn.setCellValueFactory(data -> data.getValue().waitingTimeProperty().asObject());
+
 
         TableColumn<Process, Integer> turnaroundTimeColumn = new TableColumn<>("Turnaround Time");
         turnaroundTimeColumn.setCellValueFactory(data -> data.getValue().turnaroundTimeProperty().asObject());
@@ -161,10 +143,38 @@ public class CPUSchedulerGUI extends Application {
             fcfsScheduling(table.getItems());
             table.refresh();
         });
-         rrButton.setOnAction(e -> RRAction());
-        
-         priorityButton.setOnAction(e -> {
-             priorityScheduling(table.getItems());
+        rrButton.setOnAction(e -> {
+            // Create a TextInputDialog to ask the user for quantum time
+            TextInputDialog quantumDialog = new TextInputDialog();
+            quantumDialog.setTitle("Round Robin Scheduling");
+            quantumDialog.setHeaderText("Enter Quantum Time");
+            quantumDialog.setContentText("Quantum Time:");
+
+            // Show the dialog and get the user input
+            quantumDialog.showAndWait().ifPresent(input -> {
+                try {
+                    // Parse the input as an integer
+                    int quantum = Integer.parseInt(input.trim());
+
+                    // Validate the quantum value
+                    if (quantum <= 0) {
+                        showAlert("Validation Error", "Quantum Time must be greater than 0!");
+                        return;
+                    }
+
+                    // Call Round Robin scheduling with the quantum value
+                    roundRobinScheduling(table.getItems(), quantum);
+                    table.refresh(); // Refresh the table to display the updated values
+
+                } catch (NumberFormatException ex) {
+                    showAlert("Input Error", "Quantum Time must be a valid integer!");
+                }
+            });
+        });
+
+
+        priorityButton.setOnAction(e -> {
+            priorityScheduling(table.getItems());
             table.refresh();
         });
         
@@ -202,7 +212,7 @@ public class CPUSchedulerGUI extends Application {
     int s = processes.size();
     int[] remainingBurstTime = new int[s];
     for (int i = 0; i < s; i++) {
-        remainingBurstTime[i] = processes.get(i).cpuTimeProperty();
+        remainingBurstTime[i] = processes.get(i).cpuTimeProperty().get();
     }
 
     int currentTime = 0;
@@ -218,7 +228,7 @@ public class CPUSchedulerGUI extends Application {
                     remainingBurstTime[i] -= quantum;
                 } else {
                     currentTime += remainingBurstTime[i];
-                    processes.get(i).setWaitingTime(currentTime - processes.get(i).cpuTimeProperty());
+                    processes.get(i).setWaitingTime(currentTime - processes.get(i).cpuTimeProperty().get());
                     processes.get(i).setTurnaroundTime(currentTime);
                     remainingBurstTime[i] = 0; // Process completed
                 }
