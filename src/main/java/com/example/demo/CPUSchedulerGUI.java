@@ -219,10 +219,25 @@ public class CPUSchedulerGUI extends Application {
     }
 
     
-   
+   private void priorityScheduling(ObservableList<Process> processes) {
+        // Sort processes by priority (higher priority first)
+        processes.sort((p1, p2) -> {
+            if (p1.priorityProperty().get() == p2.priorityProperty().get()) {
+                return p2.cpuTimeProperty().get() - p1.cpuTimeProperty().get(); // FCFS for same priority
+            }
+            return p1.priorityProperty().get() - p2.priorityProperty().get(); // Higher priority first
+        });
 
+        int currentTime = 0;
 
-
+        // Calculate waiting and turnaround times
+        for (Process prt : processes) {
+            prt.setWaitingTime(currentTime);
+            currentTime += prt.cpuTimeProperty().get();
+            prt.setTurnaroundTime(currentTime);
+        }
+    }
+    
     
     public static void main(String[] args) {
         launch(args);
