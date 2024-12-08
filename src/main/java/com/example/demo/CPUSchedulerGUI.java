@@ -53,7 +53,7 @@ public class CPUSchedulerGUI extends Application {
 
                 // Get Input Values
                 int cpuTime = Integer.parseInt(cpuTimeField.getText().trim());
-                 int quantum =Integer.parseInt(quantumField.getText().trim());
+              
                 int priority;
           
 
@@ -77,7 +77,7 @@ public class CPUSchedulerGUI extends Application {
                 // Clear Input Fields
                 cpuTimeField.clear();
                 priorityField.clear();
-                quantumField.clear();
+          
 
             } catch (NumberFormatException ex) {
                 showAlert("Input Error", "CPU Time and Priority must be valid integers!");
@@ -92,6 +92,23 @@ public class CPUSchedulerGUI extends Application {
                 addButton
         );
         return form;
+    }
+
+      private void ٌRRAction() {
+        try {
+           
+            int quantumTime = Integer.parseInt(quantumField.getText().trim());
+            // Call your scheduling method with the retrieved quantum time
+            rrScheduling(table.getItems(), quantumTime);
+            table.refresh();
+           quantumField.clear();
+        } catch (NumberFormatException ex) {
+            // Handle invalid input
+            showErrorAlert("Please enter a valid integer for quantum time.");
+        } catch (Exception ex) {
+            // Handle any other exceptions
+            showErrorAlert("An error occurred: " + ex.getMessage());
+        }
     }
 
     private void showAlert(String title, String message) {
@@ -144,12 +161,10 @@ public class CPUSchedulerGUI extends Application {
             fcfsScheduling(table.getItems());
             table.refresh();
         });
-         rrButton.setOnAction(e -> {
-            fcfsScheduling(table.getItems());
-            table.refresh();
-        });
+         rrButton.setOnAction(e -> RRAction());
+        
          priorityButton.setOnAction(e -> {
-            fcfsScheduling(table.getItems());
+             priorityScheduling(table.getItems());
             table.refresh();
         });
         
