@@ -217,7 +217,28 @@ public class CPUSchedulerGUI extends Application {
         }
         readyQueue.clear();
     }
+/*
+private void fcfsScheduling(ObservableList<Process> processes) {
+    int currentTime = 0;
 
+    // Initialize all processes to the "Ready" state
+    for (Process process : processes) {
+        process.setState("Ready");
+    }
+
+    for (Process currentProcess : processes) {
+        currentProcess.setState("Running"); // Transition to Running state
+        currentProcess.setWaitingTime(currentTime); // Set waiting time
+        currentTime += currentProcess.getBurstTime(); // Execute process
+        currentProcess.setTurnaroundTime(currentTime); // Set turnaround time
+        currentProcess.setState("Completed"); // Transition to Completed state
+    }
+
+    // Update ObservableList (if necessary for UI bindings)
+    processes.clear();
+    processes.addAll(processes); // Re-add updated processes
+}
+*/
     public static void main(String[] args) {
         launch(args);
     }
