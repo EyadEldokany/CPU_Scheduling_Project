@@ -202,7 +202,7 @@ public class CPUSchedulerGUI extends Application {
     int s = processes.size();
     int[] remainingBurstTime = new int[s];
     for (int i = 0; i < s; i++) {
-        remainingBurstTime[i] = processes.get(i).cpuTimeProperty();
+        remainingBurstTime[i] = processes.get(i).cpuTimeProperty().get();
     }
 
     int currentTime = 0;
@@ -218,7 +218,7 @@ public class CPUSchedulerGUI extends Application {
                     remainingBurstTime[i] -= quantum;
                 } else {
                     currentTime += remainingBurstTime[i];
-                    processes.get(i).setWaitingTime(currentTime - processes.get(i).cpuTimeProperty());
+                    processes.get(i).setWaitingTime(currentTime - processes.get(i).cpuTimeProperty().get());
                     processes.get(i).setTurnaroundTime(currentTime);
                     remainingBurstTime[i] = 0; // Process completed
                 }
