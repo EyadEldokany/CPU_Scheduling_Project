@@ -42,7 +42,8 @@ public class CPUSchedulerGUI extends Application {
         cpuTimeField.setPromptText("CPU Time");
         TextField priorityField = new TextField();
         priorityField.setPromptText("Priority");
-
+       TextField quantumField = new TextField();
+        quantumField.setPromptText("Priority");
         // Add Process Button
         Button addButton = new Button("Add Process");
         addButton.setOnAction(e -> {
@@ -53,6 +54,7 @@ public class CPUSchedulerGUI extends Application {
                 // Get Input Values
                 int cpuTime = Integer.parseInt(cpuTimeField.getText().trim());
                 int priority;
+                int quantum;
 
                 if (cpuTime <= 0) {
                     showAlert("Validation Error", "CPU Time must be greater than 0!");
@@ -65,6 +67,13 @@ public class CPUSchedulerGUI extends Application {
                 } else {
                     priority = Integer.parseInt(priorityField.getText().trim());
                 }
+                
+                if (quantumField.getText().trim().isEmpty()) {
+                    showAlert("Validation Error", "quantum time cannot be empty!");
+                    return;
+                } else {
+                    priority = Integer.parseInt(quantumField.getText().trim());
+                }
 
                 // Create Process and Add to Ready Queue and Table
                 Process process = new Process(processId, cpuTime, priority);
@@ -74,6 +83,7 @@ public class CPUSchedulerGUI extends Application {
                 // Clear Input Fields
                 cpuTimeField.clear();
                 priorityField.clear();
+                quantumField.clear();
 
             } catch (NumberFormatException ex) {
                 showAlert("Input Error", "CPU Time and Priority must be valid integers!");
@@ -85,6 +95,7 @@ public class CPUSchedulerGUI extends Application {
                 new Label("Add Process"),
                 cpuTimeField,
                 priorityField,
+                quantumField,
                 addButton
         );
         return form;
@@ -139,6 +150,10 @@ public class CPUSchedulerGUI extends Application {
         });
         fcfsButton.setOnAction(e -> {
             fcfsScheduling(new LinkedList<>(readyQueue)); // Create a copy of the queue
+            table.refresh(); // Update the table to show the new values
+        });
+        rrButton.setOnAction(e -> {
+          rrScheduling(new LinkedList<>(readyQueue)); // Create a copy of the queue
             table.refresh(); // Update the table to show the new values
         });
 
@@ -212,7 +227,7 @@ public class CPUSchedulerGUI extends Application {
 }
 
 
-    */ private void roundRobinScheduling(ObservableList<Process> processes, int quantum,Queue<Process> readyQueue) {
+    */ private void rrScheduling(ObservableList<Process> processes, int quantum,Queue<Process> readyQueue) {
        int n = processList.size();
         Queue<Process> readyQueue = new LinkedList<>();
         int[] remainingBurstTime = new int[n];
