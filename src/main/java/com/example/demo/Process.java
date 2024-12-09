@@ -9,6 +9,7 @@ public class Process {
     private IntegerProperty turnaroundTime;
     private IntegerProperty  priority;
     private IntegerProperty  remainingBurstTime;
+    private SimpleStringProperty status;
     
     public Process(String processId, int cpuTime , int priority) {
         this.processId = new SimpleStringProperty(processId);
@@ -17,6 +18,7 @@ public class Process {
         this.turnaroundTime = new SimpleIntegerProperty(0);
         this.priority = new SimpleIntegerProperty(priority);
      this.remainingBurstTime = new SimpleIntegerProperty(cpuTime);
+        this.status = new SimpleStringProperty("New");
     }
 
     public StringProperty processIdProperty() {
@@ -40,7 +42,10 @@ public class Process {
      public IntegerProperty remainingBurstTimeProperty() {
         return remainingBurstTime;
     }
-
+     public String getStatus() {
+        return status;
+    }
+    
     public void setWaitingTime(int waitingTime) {
         this.waitingTime.set(waitingTime);
     }
@@ -48,6 +53,7 @@ public class Process {
     public void setTurnaroundTime(int turnaroundTime) {
         this.turnaroundTime.set(turnaroundTime);
     }
-  
+     public void setStatus(String status) {
+        this.status.set(status);
 
 }
