@@ -38,8 +38,8 @@ public class CPUSchedulerGUI extends Application {
         // Input Fields
         TextField cpuTimeField = new TextField();
         cpuTimeField.setPromptText("CPU Time");
-        TextField priorityField = new TextField();
-        priorityField.setPromptText("Priority");
+    //    TextField priorityField = new TextField();
+  //      priorityField.setPromptText("Priority");
 //        TextField quantumField = new TextField();
 //        quantumField.setPromptText("Quantum Time");
         // Add Process Button
@@ -52,7 +52,7 @@ public class CPUSchedulerGUI extends Application {
                 // Get Input Values
                 int cpuTime = Integer.parseInt(cpuTimeField.getText().trim());
 //                int quantum =Integer.parseInt(quantumField.getText().trim());
-                int priority;
+               // int priority; 
           
 
                 // Validate Inputs
@@ -60,13 +60,13 @@ public class CPUSchedulerGUI extends Application {
                     showAlert("Validation Error", "CPU Time must be greater than 0!");
                     return;
                 }
-
+/*
                 if (priorityField.getText().trim().isEmpty()) {
                     showAlert("Validation Error", "Priority cannot be empty!");
                     return;
                 } else {
                     priority = Integer.parseInt(priorityField.getText().trim());
-                }
+                } */
 
                 // Add Process to Table
                 Process process = new Process(processId, cpuTime, priority);
@@ -74,7 +74,7 @@ public class CPUSchedulerGUI extends Application {
 
                 // Clear Input Fields
                 cpuTimeField.clear();
-                priorityField.clear();
+              //  priorityField.clear();
 //                quantumField.clear();
 
             } catch (NumberFormatException ex) {
@@ -174,8 +174,32 @@ public class CPUSchedulerGUI extends Application {
 
 
         priorityButton.setOnAction(e -> {
-            priorityScheduling(table.getItems());
-            table.refresh();
+            // Create a TextInputDialog to ask the user for priority
+            TextInputDialog PriorityDialog = new TextInputDialog();
+            PriorityDialog.setTitle("Priority Scheduling");
+            PriorityDialog.setHeaderText("  Enter Priority");
+            PriorityDialog.setContentText("Priority:");
+
+            // Show the dialog and get the user input
+            quantumDialog.showAndWait().ifPresent(input -> {
+                try {
+                    // Parse the input as an integer
+                    int priority = Integer.parseInt(input.trim());
+
+                    // Validate the priority
+                    if (priority <= 0) {
+                        showAlert("Validation Error", "priority must be greater than 0!");
+                        return;
+                    }
+
+                    // Call priority scheduling with the priority value
+                    priorityScheduling(table.getItems(), quantum);
+                    table.refresh(); // Refresh the table to display the updated values
+
+                } catch (NumberFormatException ex) {
+                    showAlert("Input Error", "priority must be a valid integer!");
+                }
+            });
         });
         
         resetButton.setOnAction(e -> {
