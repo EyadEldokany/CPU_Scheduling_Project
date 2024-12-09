@@ -116,8 +116,10 @@ public class CPUSchedulerGUI extends Application {
 
         TableColumn<Process, Integer> turnaroundTimeColumn = new TableColumn<>("Turnaround Time");
         turnaroundTimeColumn.setCellValueFactory(data -> data.getValue().turnaroundTimeProperty().asObject());
+         TableColumn<Process, String> statusColumn = new TableColumn<>("Status");
+        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        table.getColumns().addAll(idColumn, cpuTimeColumn, priorityColumn, waitingTimeColumn, turnaroundTimeColumn);
+        table.getColumns().addAll(idColumn, cpuTimeColumn, priorityColumn, waitingTimeColumn, turnaroundTimeColumn,statusColumn);
         return table;
     }
 
@@ -139,6 +141,11 @@ public class CPUSchedulerGUI extends Application {
             fcfsScheduling(new LinkedList<>(readyQueue)); // Create a copy of the queue
             table.refresh(); // Update the table to show the new values
         });
+
+       
+
+        
+        
         resetButton.setOnAction(e -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to reset the table?", ButtonType.YES, ButtonType.NO);
             alert.showAndWait();
@@ -205,9 +212,58 @@ public class CPUSchedulerGUI extends Application {
 }
 
 
-    */
+    */ private void roundRobinScheduling(ObservableList<Process> processes, int quantum,Queue<Process> readyQueue) {
+       int n = processList.size();
+        Queue<Process> readyQueue = new LinkedList<>();
+        int[] remainingBurstTime = new int[n];
 
-    private void fcfsScheduling(Queue<Process> readyQueue) {
+        // Initialize remaining burst times and set initial statuses
+        for (int i = 0; i < n; i++) {
+            remainingBurstTime[i] = processList.get(i).cpuTimeProperty().get();
+            processList.get(i).setStatus("Ready");
+            readyQueue.add(processList.get(i)); // Add all processes to the ready queue initially
+        }
+
+        int currentTime = 0;
+
+        while (!readyQueue.isEmpty()) { // While there are processes in the ready queue
+            Process currentProcess = readyQueue.poll(); // Get the next process from the queue
+
+            if (currentProcess != null) {
+                currentProcess.setStatus("Running"); // Update status to Running
+                int burstTime = remainingBurstTime[processList.indexOf(currentProcess)];
+
+                if (burstTime > quantum) { 
+                    currentTime += quantum; // Increment current time by quantum
+                    remainingBurstTime[processList.indexOf(currentProcess)] -= quantum; // Decrease remaining burst time
+                    readyQueue.add(currentProcess); // Re-add process to the queue for next round
+                } else { 
+                    currentTime += burstTime; // Increment time by remaining burst time
+                    currentProcess.setWaitingTime(currentTime - currentProcess.getBurstTime()); // Set waiting time
+                    currentProcess.setTurnaroundTime(currentTime); // Set turnaround time
+                    remainingBurstTime[processList.indexOf(currentProcess)] = 0; // Mark as completed
+                    currentProcess.setStatus("Completed"); // Update status to Completed
+                }
+
+                System.out.println(currentProcess.toString()); // Print process details after execution
+
+                // Update the ObservableList directly to reflect changes in GUI
+                processList.set(processList.indexOf(currentProcess), currentProcess);
+            }
+
+            // Update statuses of other processes in the queue
+            for (Process p : processList) { 
+                if (remainingBurstTime[processList.indexOf(p)] > 0 && !readyQueue.contains(p)) {
+                    p.setStatus("Ready"); // Update status back to Ready if not in queue
+                }
+            }
+            
+          //  System.out.println("Current Time: " + currentTime); // test
+        }
+    }
+}
+
+ /*   private void fcfsScheduling(Queue<Process> readyQueue) {
         int currentTime = 0;
 
         for (Process currentProcess : readyQueue) {
@@ -217,7 +273,7 @@ public class CPUSchedulerGUI extends Application {
         }
         readyQueue.clear();
     }
-/*
+*/
 private void fcfsScheduling(ObservableList<Process> processes) {
     int currentTime = 0;
 
@@ -238,7 +294,7 @@ private void fcfsScheduling(ObservableList<Process> processes) {
     processes.clear();
     processes.addAll(processes); // Re-add updated processes
 }
-*/
+
     public static void main(String[] args) {
         launch(args);
     }
