@@ -216,18 +216,55 @@ public class CPUSchedulerGUI extends Application {
         List<Process> sortedProcesses = new ArrayList<>(readyQueue);
         sortedProcesses.sort(Comparator.comparingInt(p -> p.cpuTimeProperty().get()));
 
-        int currentTime = 0;
-
+        // Set all processes to "Ready" initially
         for (Process process : sortedProcesses) {
-            process.setWaitingTime(currentTime);
-            currentTime += process.cpuTimeProperty().get();
-            process.setTurnaroundTime(currentTime);
+            process.setStatus("Ready");
         }
+
+        // Update the UI table
         table.getItems().clear();
         table.getItems().addAll(sortedProcesses);
-        readyQueue.clear();
-    }
 
+        readyQueue.clear(); // Clear the Ready Queue
+
+        // Create a Timeline to process jobs one by one
+        Timeline timeline = new Timeline();
+
+        // Simulation variables
+        final int[] currentTime = {0}; // Track the current time
+        final int[] index = {0}; // Track the current process index
+
+        timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(sortedProcesses.get(index[0]).cpuTimeProperty().get() / 10.0), event -> {
+            // Check if all processes are completed
+            if (index[0] >= sortedProcesses.size()) {
+                timeline.stop();
+                return;
+            }
+
+            // Process the current job
+            Process currentProcess = sortedProcesses.get(index[0]);
+
+            if ("Ready".equals(currentProcess.getStatus())) {
+                currentProcess.setStatus("Running");
+                table.refresh(); // Update the UI
+            } else {
+                currentProcess.setWaitingTime(currentTime[0]);
+                currentTime[0] += currentProcess.cpuTimeProperty().get();
+                currentProcess.setTurnaroundTime(currentTime[0]);
+                currentProcess.setStatus("Completed");
+                table.refresh(); // Update the UI
+                index[0]++; // Move to the next process
+
+                // Adjust the duration for the next process
+                if (index[0] < sortedProcesses.size()) {
+                    timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(sortedProcesses.get(index[0]).cpuTimeProperty().get() / 10.0)));
+                }
+            }
+        }));
+
+        timeline.setCycleCount(Animation.INDEFINITE); // Run indefinitely until stopped
+        timeline.play();
+    }
 
     /*
     private void roundRobinScheduling(ObservableList<Process> processes, int quantum) {
