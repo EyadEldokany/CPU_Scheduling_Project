@@ -148,9 +148,13 @@ public class CPUSchedulerGUI extends Application {
         sjfButton.setOnAction(e -> {
             sjfScheduling(new LinkedList<>(readyQueue)); // Create a copy to sort and process
         });
-        fcfsButton.setOnAction(e -> {
-          //  fcfsScheduling(new LinkedList<>(readyQueue)); // Create a copy of the queue
-         //   table.refresh(); // Update the table to show the new values
+        // fcfsButton.setOnAction(e -> {
+        //   //  fcfsScheduling(new LinkedList<>(readyQueue)); // Create a copy of the queue
+        //  //   table.refresh(); // Update the table to show the new values
+        // });
+           fcfsButton.setOnAction(e -> {
+           fcfsScheduling(table.getItems()); // Create a copy of the queue
+           // table.refresh(); // Update the table to show the new values
         });
         rrButton.setOnAction(e -> {
             // Create a TextInputDialog to ask the user for quantum time
@@ -328,28 +332,58 @@ public class CPUSchedulerGUI extends Application {
            readyQueue.clear();
        }
    */
-    private void fcfsScheduling(ObservableList<Process> processes) {
+    // private void fcfsScheduling(ObservableList<Process> processes) {
 
-        int currentTime = 0;
+    //     int currentTime = 0;
 
+    //     // Initialize all processes to the "Ready" state
+    //     for (Process process : processes) {
+    //         process.setStatus("Ready");
+    //     }
+
+    //     for (Process currentProcess : processes) {
+    //         currentProcess.setStatus("Running"); // Transition to Running state
+    //         currentProcess.setWaitingTime(currentTime); // Set waiting time
+    //         currentTime += currentProcess.cpuTimeProperty().get(); // Execute process
+    //         currentProcess.setTurnaroundTime(currentTime); // Set turnaround time
+    //         currentProcess.setStatus("Completed"); // Transition to Completed state
+    //     }
+
+    //     // Update ObservableList (if necessary for UI bindings)
+    //     processes.clear();
+    //     processes.addAll(processes); // Re-add updated processes
+    // }
+    public void fcfsScheduling(ObservableList<Process> processes) {
         // Initialize all processes to the "Ready" state
         for (Process process : processes) {
             process.setStatus("Ready");
         }
 
+        Timeline timeline = new Timeline();
+        int[] currentTime = {0}; // Using an array to allow modification inside the lambda
+
         for (Process currentProcess : processes) {
-            currentProcess.setStatus("Running"); // Transition to Running state
-            currentProcess.setWaitingTime(currentTime); // Set waiting time
-            currentTime += currentProcess.cpuTimeProperty().get(); // Execute process
-            currentProcess.setTurnaroundTime(currentTime); // Set turnaround time
-            currentProcess.setStatus("Completed"); // Transition to Completed state
+            // Add a KeyFrame for each process
+            timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(currentTime[0]/10), event -> {
+                currentProcess.setStatus("Running"); // Transition to Running state
+                currentProcess.setWaitingTime(currentTime[0]); // Set waiting time
+            }));
+
+            // Add a KeyFrame for process completion
+            int executionTime = currentProcess.cpuTimeProperty().get();
+            timeline.getKeyFrames().add(new KeyFrame(Duration.seconds((currentTime[0] + executionTime) /10), event -> {
+                currentTime[0] += executionTime; // Update current time
+                currentProcess.setTurnaroundTime(currentTime[0]); // Set turnaround time
+                currentProcess.setStatus("Completed"); // Transition to Completed state
+            }));
+
+            currentTime[0] += executionTime; // Increment for the next process
         }
 
-        // Update ObservableList (if necessary for UI bindings)
-        processes.clear();
-        processes.addAll(processes); // Re-add updated processes
+        timeline.setCycleCount(1); // Run the timeline once
+        timeline.play(); // Start the timeline
     }
-
+    
     public static void main(String[] args) {
         launch(args);
     }
