@@ -1,5 +1,6 @@
 package com.example.demo;
 
+
 import javafx.beans.property.*;
 
 public class Process {
@@ -9,14 +10,16 @@ public class Process {
     private IntegerProperty turnaroundTime;
     private IntegerProperty  priority;
     private IntegerProperty  remainingBurstTime;
+    private SimpleStringProperty status;
 
     public Process(String processId, int cpuTime , int priority) {
         this.processId = new SimpleStringProperty(processId);
         this.cpuTime = new SimpleIntegerProperty(cpuTime);
-        this.waitingTime = new SimpleIntegerProperty(0);
-        this.turnaroundTime = new SimpleIntegerProperty(0);
+        this.waitingTime = new SimpleIntegerProperty();
+        this.turnaroundTime = new SimpleIntegerProperty();
         this.priority = new SimpleIntegerProperty(priority);
-        this.remainingBurstTime = new SimpleIntegerProperty(cpuTime);
+     this.remainingBurstTime = new SimpleIntegerProperty(cpuTime);
+        this.status = new SimpleStringProperty("New");
     }
 
     public StringProperty processIdProperty() {
@@ -40,16 +43,19 @@ public class Process {
      public IntegerProperty remainingBurstTimeProperty() {
         return remainingBurstTime;
     }
+     public StringProperty  statusProperty() {
+        return status;
+    }
 
-    public void setWaitingTime(int waitingTime) {
-        this.waitingTime.set(waitingTime);
+    public void setWaitingTime(int time) {
+        this.waitingTime.set(time);
     }
 
     public void setTurnaroundTime(int turnaroundTime) {
         this.turnaroundTime.set(turnaroundTime);
     }
-    public IntegerProperty PriorityProperty() {
-        return priority;
-    }
+     public void setStatus(String status) {
+        this.status.set(status);
 
-}
+  }}
+  
