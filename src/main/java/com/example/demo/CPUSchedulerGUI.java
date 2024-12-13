@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import javafx.animation.Animation;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.scene.control.cell.PropertyValueFactory;  //   isnt not needed
