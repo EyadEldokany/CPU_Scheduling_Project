@@ -3,7 +3,7 @@ package com.example.demo;
 import javafx.animation.Animation;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
-import javafx.scene.control.cell.PropertyValueFactory;  //   isnt not needed
+import javafx.scene.control.cell.PropertyValueFactory;  //   isn't needed
 import javafx.collections.FXCollections;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -17,7 +17,7 @@ import javafx.util.Duration;
 public class CPUSchedulerGUI extends Application {
     private int processCounter = 1; // Counter for generating unique Process IDs
     private Queue<Process> readyQueue = new LinkedList<>(); // Ready Queue for processes
-//     private ObservableList<Process> processList = FXCollections.observableArrayList();   isnt needed because you dont uses processlist
+    //     private ObservableList<Process> processList = FXCollections.observableArrayList();   isn't needed because you don't use processlist
     private Timeline timeline;
     public CPUSchedulerGUI() {
         // Default constructor
@@ -128,7 +128,7 @@ public class CPUSchedulerGUI extends Application {
         TableColumn<Process, Integer> turnaroundTimeColumn = new TableColumn<>("Turnaround Time");
         turnaroundTimeColumn.setCellValueFactory(data -> data.getValue().turnaroundTimeProperty().asObject());
         TableColumn<Process, String> statusColumn = new TableColumn<>("Status");
-       // statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));  this  isnot correct
+        // statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));  this  is not correct
         statusColumn.setCellValueFactory(data -> data.getValue().statusProperty());
         table.getColumns().addAll(idColumn, cpuTimeColumn, priorityColumn, waitingTimeColumn, turnaroundTimeColumn,statusColumn);
         return table;
@@ -149,14 +149,12 @@ public class CPUSchedulerGUI extends Application {
         sjfButton.setOnAction(e -> {
             sjfScheduling(new LinkedList<>(readyQueue)); // Create a copy to sort and process
         });
-        // fcfsButton.setOnAction(e -> {
-        //   //  fcfsScheduling(new LinkedList<>(readyQueue)); // Create a copy of the queue
-        //  //   table.refresh(); // Update the table to show the new values
-        // });
-           fcfsButton.setOnAction(e -> {
-           fcfsScheduling(table.getItems()); // Create a copy of the queue
-           // table.refresh(); // Update the table to show the new values
+
+        fcfsButton.setOnAction(e -> {
+            fcfsScheduling(table.getItems()); // Create a copy of the queue
+            // table.refresh(); // Update the table to show the new values
         });
+
         rrButton.setOnAction(e -> {
             // Create a TextInputDialog to ask the user for quantum time
             TextInputDialog quantumDialog = new TextInputDialog();
@@ -177,7 +175,7 @@ public class CPUSchedulerGUI extends Application {
                     }
 
                     // Call Round Robin scheduling with the quantum value
-                  rrScheduling(table.getItems(), quantum);
+                    rrScheduling(table.getItems(), quantum);
                     table.refresh(); // Refresh the table to display the updated values
 
                 } catch (NumberFormatException ex) {
@@ -186,14 +184,9 @@ public class CPUSchedulerGUI extends Application {
             });
         });
 
-       /* priorityButton.setOnAction(e -> {
-            priorityScheduling(table.getItems());
-            table.refresh();
-        });*/
-
-
-
-
+        priorityButton.setOnAction(e -> {
+            priorityScheduling(new LinkedList<>(readyQueue));
+        });
 
         resetButton.setOnAction(e -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to reset the table?", ButtonType.YES, ButtonType.NO);
@@ -267,39 +260,7 @@ public class CPUSchedulerGUI extends Application {
         timeline.play();
     }
 
-    /*
-    private void roundRobinScheduling(ObservableList<Process> processes, int quantum) {
-    int s = processes.size();
-    int[] remainingBurstTime = new int[s];
-    for (int i = 0; i < s; i++) {
-        remainingBurstTime[i] = processes.get(i).getBurstTime();
-    }
-
-    int currentTime = 0;
-    boolean done;
-
-    do {
-        done = true;
-        for (int i = 0; i < s; i++) {
-            if (remainingBurstTime[i] > 0) {
-                done = false; //  a pending process
-                if (remainingBurstTime[i] > quantum) {
-                    currentTime += quantum;
-                    remainingBurstTime[i] -= quantum;
-                } else {
-                    currentTime += remainingBurstTime[i];
-                    processes.get(i).setWaitingTime(currentTime - processes.get(i).getBurstTime());
-                    processes.get(i).setTurnaroundTime(currentTime);
-                    remainingBurstTime[i] = 0; // Process completed
-                }
-            }
-        }
-    } while (!done); //  until all processes are completed
-}
-
-
-    */
- private   int  currentTime = 0;
+    private   int  currentTime = 0;
     private void rrScheduling(ObservableList<Process> processes, int quantum) {
         int n = processes.size();
         int[] remainingBurstTime = new int[n];
@@ -313,7 +274,7 @@ public class CPUSchedulerGUI extends Application {
 
 
 
-     timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+        timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
             if (!tempQueue.isEmpty()) { // While there are processes in the temporary queue
                 Process currentProcess = tempQueue.poll(); // Get the next process from the queue
 
@@ -358,39 +319,6 @@ public class CPUSchedulerGUI extends Application {
     }
 
 
-
-    /*   private void fcfsScheduling(Queue<Process> readyQueue) {
-           int currentTime = 0;
-
-           for (Process currentProcess : readyQueue) {
-               currentProcess.setWaitingTime(currentTime);
-               currentTime += currentProcess.cpuTimeProperty().get();
-               currentProcess.setTurnaroundTime(currentTime);
-           }
-           readyQueue.clear();
-       }
-   */
-    // private void fcfsScheduling(ObservableList<Process> processes) {
-
-    //     int currentTime = 0;
-
-    //     // Initialize all processes to the "Ready" state
-    //     for (Process process : processes) {
-    //         process.setStatus("Ready");
-    //     }
-
-    //     for (Process currentProcess : processes) {
-    //         currentProcess.setStatus("Running"); // Transition to Running state
-    //         currentProcess.setWaitingTime(currentTime); // Set waiting time
-    //         currentTime += currentProcess.cpuTimeProperty().get(); // Execute process
-    //         currentProcess.setTurnaroundTime(currentTime); // Set turnaround time
-    //         currentProcess.setStatus("Completed"); // Transition to Completed state
-    //     }
-
-    //     // Update ObservableList (if necessary for UI bindings)
-    //     processes.clear();
-    //     processes.addAll(processes); // Re-add updated processes
-    // }
     public void fcfsScheduling(ObservableList<Process> processes) {
         // Initialize all processes to the "Ready" state
         for (Process process : processes) {
@@ -421,7 +349,59 @@ public class CPUSchedulerGUI extends Application {
         timeline.setCycleCount(1); // Run the timeline once
         timeline.play(); // Start the timeline
     }
-    
+    private void priorityScheduling(Queue<Process> readyQueue) {
+        List<Process> sortedProcesses = new ArrayList<>(readyQueue);
+        sortedProcesses.sort(Comparator.comparingInt(p -> p.priorityProperty().get()));
+
+        // Set all processes to "Ready" initially
+        for (Process process : sortedProcesses) {
+            process.setStatus("Ready");
+        }
+
+        // Update the UI table
+        table.getItems().clear();
+        table.getItems().addAll(sortedProcesses);
+
+        readyQueue.clear(); // Clear the Ready Queue
+
+        // Create a Timeline to process jobs one by one
+        Timeline timeline = new Timeline();
+        final int[] currentTime = {0}; // Track the current time
+        final int[] index = {0}; // Track the current process index
+
+        timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(sortedProcesses.get(index[0]).cpuTimeProperty().get() / 10.0), event -> {
+            if (index[0] >= sortedProcesses.size()) {
+                timeline.stop();
+                return;
+            }
+
+            Process currentProcess = sortedProcesses.get(index[0]);
+
+            if ("Ready".equals(currentProcess.getStatus())) {
+                currentProcess.setStatus("Running");
+                table.refresh(); // Update the UI
+            } else if ("Running".equals(currentProcess.getStatus())) {
+                // Simulate process execution
+                currentTime[0] += currentProcess.cpuTimeProperty().get();
+                currentProcess.setWaitingTime(currentTime[0] - currentProcess.cpuTimeProperty().get());
+                currentProcess.setTurnaroundTime(currentTime[0]);
+                currentProcess.setStatus("Completed");
+                table.refresh(); // Update the UI
+                index[0]++; // Move to the next process
+
+                // Adjust the duration for the next process
+                if (index[0] < sortedProcesses.size()) {
+                    timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(sortedProcesses.get(index[0]).cpuTimeProperty().get() / 10.0)));
+                }
+            }
+        }));
+
+        timeline.setCycleCount(Animation.INDEFINITE); // Run indefinitely until stopped
+        timeline.play();
+    }
+
+
+
     public static void main(String[] args) {
         launch(args);
     }
