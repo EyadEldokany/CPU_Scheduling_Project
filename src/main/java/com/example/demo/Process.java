@@ -57,5 +57,9 @@ public class Process {
      public void setStatus(String status) {
         this.status.set(status);
 
-  }}
+    }
+        public String getStatus() {
+        return status.get();
+    }
+}
   
