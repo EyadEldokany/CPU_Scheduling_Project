@@ -61,5 +61,8 @@ public class Process {
         public String getStatus() {
         return status.get();
     }
+      public int getWaitingTime() {
+        return waitingTime.get();
+    }
 }
   
