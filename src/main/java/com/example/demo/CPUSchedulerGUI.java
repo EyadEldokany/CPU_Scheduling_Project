@@ -318,7 +318,7 @@ public class CPUSchedulerGUI extends Application {
         timeline.play(); // Start the timeline
     }
 
-
+*/
     public void fcfsScheduling(ObservableList<Process> processes) {
         // Initialize all processes to the "Ready" state
         for (Process process : processes) {
@@ -355,7 +355,7 @@ public class CPUSchedulerGUI extends Application {
         timeline.setCycleCount(1); // Run the timeline once
         timeline.play(); // Start the timeline
     }
-       */
+       
 
     
    private void rrScheduling(ObservableList<Process> processes, int quantum) {
