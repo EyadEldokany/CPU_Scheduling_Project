@@ -327,19 +327,25 @@ public class CPUSchedulerGUI extends Application {
 
         Timeline timeline = new Timeline();
         int[] currentTime = {0}; // Using an array to allow modification inside the lambda
-
+            
         for (Process currentProcess : processes) {
+              currentProcess.setWaitingTime(currentTime[0]); // Set waiting time
             // Add a KeyFrame for each process
             timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(currentTime[0]/10), event -> {
                 currentProcess.setStatus("Running"); // Transition to Running state
-                currentProcess.setWaitingTime(currentTime[0]); // Set waiting time
+              
             }));
 
             // Add a KeyFrame for process completion
             int executionTime = currentProcess.cpuTimeProperty().get();
             timeline.getKeyFrames().add(new KeyFrame(Duration.seconds((currentTime[0] + executionTime) /10), event -> {
-                currentTime[0] += executionTime; // Update current time
-                currentProcess.setTurnaroundTime(currentTime[0]); // Set turnaround time
+               // currentTime[0] += executionTime; // Update current time
+                //currentProcess.setTurnaroundTime(currentTime[0]); // Set turnaround time
+
+              int turnaround =( currentProcess.getWaitingTime() + currentProcess.cpuTimeProperty().get());
+                currentProcess.setTurnaroundTime(turnaround); //turnaround time
+               
+
                 currentProcess.setStatus("Completed"); // Transition to Completed state
             }));
 
