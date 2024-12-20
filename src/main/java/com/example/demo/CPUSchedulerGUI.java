@@ -260,7 +260,7 @@ public class CPUSchedulerGUI extends Application {
         timeline.play();
     }
 
-    private   int  currentTime = 0;
+ /*   private   int  currentTime = 0;
     private void rrScheduling(ObservableList<Process> processes, int quantum) {
         int n = processes.size();
         int[] remainingBurstTime = new int[n];
@@ -355,6 +355,75 @@ public class CPUSchedulerGUI extends Application {
         timeline.setCycleCount(1); // Run the timeline once
         timeline.play(); // Start the timeline
     }
+       */
+
+    
+   private void rrScheduling(ObservableList<Process> processes, int quantum) {
+        int n = processes.size();
+        int[] remainingBurstTime = new int[n];
+        int[] currentTime = {0};  //   add
+        Queue<Process> tempQueue = new LinkedList<>(readyQueue); // Create a temporary queue
+
+        // Initialize remaining burst times and set initial statuses
+        for (int i = 0; i < n; i++) {
+            remainingBurstTime[i] = processes.get(i).cpuTimeProperty().get();
+            processes.get(i).setStatus("Ready");
+        }
+
+
+
+        timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+            if (!tempQueue.isEmpty()) { // While there are processes in the temporary queue
+                Process currentProcess = tempQueue.poll(); // Get the next process from the queue
+
+                if (currentProcess != null) {
+                    currentProcess.setStatus("Running");
+                    int index = processes.indexOf(currentProcess);
+                    int burstTime = remainingBurstTime[index];// Update status to Running
+
+
+                    if (burstTime > quantum) {
+                        currentTime[0] += quantum; // Increment current time by quantum
+                        remainingBurstTime[index] -= quantum;
+                        tempQueue.add(currentProcess);
+
+                    } else {
+                        currentTime[0] += burstTime; // Increment time by remaining burst time
+                        currentProcess.setWaitingTime(currentTime[0] - currentProcess.cpuTimeProperty().get()); // Set waiting time
+                        currentProcess.setTurnaroundTime(currentTime[0]); // Set turnaround time
+                        remainingBurstTime[processes.indexOf(currentProcess)] = 0; // Mark as completed
+                        currentProcess.setStatus("Completed"); // Update status to Completed
+                    }
+
+                    System.out.println(currentProcess.toString()); // Print process details after execution
+
+                    // Update the ObservableList directly to reflect changes in GUI
+                    processes.set(index, currentProcess);
+
+                }
+            } else {
+                timeline.stop(); // Stop the timeline when all processes are completed
+            }
+
+            // Update statuses of other processes in the queue
+            for (Process p : processes) {
+                if (remainingBurstTime[processes.indexOf(p)] > 0 && !tempQueue.contains(p)) {
+                    p.setStatus("Ready"); // Update status back to Ready if not in queue
+                }
+            }
+
+            table.refresh(); // Refresh the table to display updated values
+
+        }));
+
+        timeline.setCycleCount(Timeline.INDEFINITE); // Run indefinitely until stopped
+        timeline.play(); // Start the timeline
+       }  
+    
+
+    
+
+    
     private void priorityScheduling(Queue<Process> readyQueue) {
         List<Process> sortedProcesses = new ArrayList<>(readyQueue);
         sortedProcesses.sort(Comparator.comparingInt(p -> p.priorityProperty().get()));
